@@ -12,6 +12,8 @@ Requisitos: Node.js 20 ou superior e npm.
 npm install
 ```
 
+No PowerShell do Windows, use `npm.cmd install` se a política de execução bloquear `npm.ps1`.
+
 Na primeira inicialização, `mongodb-memory-server` baixa o binário do MongoDB compatível com o sistema operacional, caso ele ainda não esteja disponível localmente.
 
 ## Como executar
@@ -20,11 +22,19 @@ Na primeira inicialização, `mongodb-memory-server` baixa o binário do MongoDB
 npm start
 ```
 
+No PowerShell do Windows, use:
+
+```powershell
+npm.cmd start
+```
+
 Em desenvolvimento, com reinicialização automática:
 
 ```bash
 npm run dev
 ```
+
+No PowerShell do Windows, use `npm.cmd run dev`.
 
 O servidor usa a porta `3000` por padrão. Para escolher outra porta, defina a variável de ambiente `PORT`.
 
