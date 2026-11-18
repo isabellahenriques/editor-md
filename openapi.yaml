@@ -1,0 +1,151 @@
+openapi: 3.0.3
+info:
+  title: API do Editor Markdown
+  version: 1.0.0
+  description: API pública e compartilhada para documentos Markdown, comentários e rascunho.
+servers:
+  - url: http://localhost:3000/api
+paths:
+  /documents:
+    get:
+      summary: Lista documentos
+      responses:
+        '200':
+          description: Documentos disponíveis
+    post:
+      summary: Cria um documento
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title: { type: string, example: Sem título.md }
+                content: { type: string }
+      responses:
+        '201': { description: Documento criado com uma versão inicial }
+        '409': { description: Título duplicado }
+  /documents/{id}:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string } }
+    get:
+      summary: Abre um documento
+      responses:
+        '200': { description: Documento encontrado }
+        '404': { description: Documento não encontrado }
+    put:
+      summary: Salva o conteúdo e cria uma versão (mantém as três mais recentes)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [content]
+              properties:
+                title: { type: string }
+                content: { type: string }
+      responses:
+        '200': { description: Documento salvo }
+        '409': { description: Título duplicado }
+    delete:
+      summary: Exclui um documento
+      responses:
+        '204': { description: Documento excluído }
+        '404': { description: Documento não encontrado }
+  /documents/{id}/title:
+    patch:
+      summary: Renomeia um documento
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title]
+              properties:
+                title: { type: string, minLength: 1 }
+      responses:
+        '200': { description: Documento renomeado }
+        '409': { description: Título duplicado }
+  /documents/{id}/comments:
+    post:
+      summary: Comenta um trecho do documento
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [selectedText, text]
+              properties:
+                selectedText: { type: string }
+                author: { type: string }
+                text: { type: string }
+      responses:
+        '201': { description: Comentário criado }
+  /documents/{id}/comments/{commentId}:
+    patch:
+      summary: Resolve ou reabre um comentário
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+        - { name: commentId, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [resolved]
+              properties:
+                resolved: { type: boolean }
+      responses:
+        '200': { description: Estado atualizado }
+  /documents/{id}/comments/{commentId}/replies:
+    post:
+      summary: Responde a um comentário
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+        - { name: commentId, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [text]
+              properties:
+                author: { type: string }
+                text: { type: string }
+      responses:
+        '201': { description: Resposta criada }
+  /draft:
+    get:
+      summary: Retorna o rascunho se possuir conteúdo
+      responses:
+        '200': { description: Rascunho ou null }
+    put:
+      summary: Salva o único rascunho compartilhado
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [content]
+              properties:
+                title: { type: string }
+                content: { type: string }
+                documentId: { type: string, nullable: true }
+      responses:
+        '200': { description: Rascunho salvo }
+        '204': { description: Conteúdo vazio remove o rascunho }
+    delete:
+      summary: Descarta o rascunho
+      responses:
+        '204': { description: Rascunho descartado }

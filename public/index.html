@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f6f2">
+  <title>Editor Markdown</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/vendor/markdown-it.min.js" defer></script>
+  <script src="/vendor/task-lists/markdown-it-task-lists.min.js" defer></script>
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="Editor Markdown - início"><span class="brand-icon">M</span><span>editor<span class="brand-light">.md</span></span></a>
+    <div class="document-name"><span class="live-dot"></span><span id="current-title">Novo documento</span><button id="rename-button" class="icon-button" title="Renomear documento" aria-label="Renomear">✎</button></div>
+    <div class="top-actions">
+      <span id="save-status" class="save-status">Todas as alterações salvas</span>
+      <button id="open-file" class="button button-quiet">Abrir .md</button>
+      <input id="file-input" type="file" accept=".md,.markdown,text/markdown,text/plain" hidden>
+      <div class="export-menu">
+        <button id="export-button" class="button button-quiet">Exportar <span aria-hidden="true">⌄</span></button>
+        <div id="export-options" class="menu-popover hidden">
+          <button data-export="markdown">Salvar .md</button>
+          <button data-export="word">Salvar Word</button>
+          <button data-export="pdf">Salvar PDF</button>
+        </div>
+      </div>
+      <button id="save-button" class="button button-primary"><span aria-hidden="true">↥</span> Salvar</button>
+    </div>
+  </header>
+
+  <div id="draft-banner" class="draft-banner hidden">
+    <span>Há um rascunho compartilhado disponível.</span>
+    <button id="restore-draft" class="text-button">Abrir rascunho</button>
+    <button id="discard-draft" class="text-button muted">Descartar</button>
+  </div>
+
+  <div class="workspace">
+    <aside class="documents-panel">
+      <div class="panel-heading"><h2>Documentos</h2><button id="new-document" class="add-button" title="Criar documento" aria-label="Criar documento">+</button></div>
+      <div id="document-list" class="document-list"></div>
+      <div class="sidebar-footer"><span class="shared-icon">◎</span> Espaço compartilhado</div>
+    </aside>
+
+    <main class="editor-area">
+      <div class="editor-toolbar" role="toolbar" aria-label="Formatação do texto">
+        <select id="style-picker" aria-label="Estilo do texto">
+          <option value="p">Parágrafo</option>
+          <option value="h1">Título 1</option>
+          <option value="h2">Título 2</option>
+          <option value="h3">Título 3</option>
+          <option value="blockquote">Citação</option>
+          <option value="pre">Bloco de código</option>
+        </select>
+        <span class="toolbar-divider"></span>
+        <button class="tool-button" data-command="bold" title="Negrito (Ctrl+B)" aria-label="Negrito"><b>B</b></button>
+        <button class="tool-button italic" data-command="italic" title="Itálico (Ctrl+I)" aria-label="Itálico">I</button>
+        <button class="tool-button underline" data-command="underline" title="Sublinhado" aria-label="Sublinhado">U</button>
+        <button class="tool-button strike" data-command="strikeThrough" title="Riscado" aria-label="Riscado">S</button>
+        <button class="tool-button highlight" data-command="highlight" title="Grifado" aria-label="Grifado">▰</button>
+        <span class="toolbar-divider"></span>
+        <button class="tool-button" data-command="insertUnorderedList" title="Lista" aria-label="Lista">•≡</button>
+        <button class="tool-button" data-command="insertOrderedList" title="Lista numerada" aria-label="Lista numerada">1≡</button>
+        <button id="checklist-button" class="tool-button" title="Lista de tarefas" aria-label="Lista de tarefas">☑</button>
+        <button class="tool-button" data-command="inlineCode" title="Código no meio do texto" aria-label="Código no meio do texto">&lt;/&gt;</button>
+        <button class="tool-button" data-command="insertHorizontalRule" title="Linha horizontal" aria-label="Linha horizontal">―</button>
+        <span class="toolbar-spacer"></span>
+        <button id="find-button" class="tool-button find-button" title="Localizar" aria-label="Localizar">⌕</button>
+        <button id="view-toggle" class="view-toggle">Ver .md</button>
+      </div>
+      <div id="find-bar" class="find-bar hidden">
+        <input id="find-input" type="search" placeholder="Localizar no documento..." aria-label="Localizar no documento">
+        <span id="find-count"></span>
+        <button id="find-prev" aria-label="Resultado anterior">↑</button>
+        <button id="find-next" aria-label="Próximo resultado">↓</button>
+        <button id="close-find" aria-label="Fechar busca">×</button>
+      </div>
+      <section id="editor-scroll" class="editor-scroll">
+        <article id="editor" class="page" contenteditable="true" spellcheck="true" aria-label="Conteúdo do documento"></article>
+        <textarea id="markdown-source" class="page markdown-source hidden" spellcheck="false" aria-label="Conteúdo Markdown"></textarea>
+      </section>
+    </main>
+
+    <aside id="comments-panel" class="comments-panel">
+      <div class="panel-heading"><div><h2>Comentários</h2><span id="comment-count" class="count-badge">0</span></div><button id="close-comments" class="icon-button" title="Fechar painel" aria-label="Fechar comentários">×</button></div>
+      <button id="add-comment" class="comment-add-button"><span>＋</span> Comentar seleção</button>
+      <div id="comments-list" class="comments-list"></div>
+      <div class="comments-footer"><span class="comment-dot"></span> Comentários visíveis para todos</div>
+    </aside>
+    <button id="show-comments" class="show-comments hidden" title="Mostrar comentários" aria-label="Mostrar comentários">▤</button>
+  </div>
+
+  <div id="comment-dialog" class="dialog-backdrop hidden">
+    <form id="comment-form" class="dialog">
+      <div class="panel-heading"><h2>Novo comentário</h2><button type="button" id="cancel-comment" class="icon-button" aria-label="Fechar">×</button></div>
+      <p class="selection-preview" id="selection-preview"></p>
+      <label for="comment-author">Seu nome</label>
+      <input id="comment-author" maxlength="80" placeholder="Anônimo">
+      <label for="comment-text">Comentário</label>
+      <textarea id="comment-text" required maxlength="2000" rows="4" placeholder="Escreva um comentário..."></textarea>
+      <div class="dialog-actions"><button type="button" id="cancel-comment-secondary" class="button button-quiet">Cancelar</button><button class="button button-primary">Comentar</button></div>
+    </form>
+  </div>
+  <div id="toast" class="toast hidden" role="status"></div>
+</body>
+</html>
