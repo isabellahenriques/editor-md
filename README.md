@@ -14,6 +14,8 @@ npm install
 
 No PowerShell do Windows, use `npm.cmd install` se a política de execução bloquear `npm.ps1`.
 
+Esse comando também instala as ferramentas de desenvolvimento para testes: Mocha, Supertest, Chai e Cypress.
+
 Na primeira inicialização, `mongodb-memory-server` baixa o binário do MongoDB compatível com o sistema operacional, caso ele ainda não esteja disponível localmente.
 
 ## Como executar
@@ -47,6 +49,16 @@ k6 run tests/performance/listar_documentos.tests.js
 ```
 
 O cenário sobe até 10 usuários virtuais em 5 segundos, mantém essa carga por 20 segundos e encerra em 5 segundos. O teste verifica se a API responde com status 200 e considera a execução aprovada quando 90% das requisições duram menos de 3 segundos, nenhuma ultrapassa 5 segundos e a taxa de falhas fica abaixo de 1%.
+
+## Testes automatizados da API
+
+Os testes funcionais da API usam Mocha, Supertest e Chai, com dados isolados em um MongoDB em memória. Para executá-los:
+
+```bash
+npm test
+```
+
+No PowerShell do Windows, use `npm.cmd test` se a política de execução bloquear `npm.ps1`. O teste de `GET /api/documents` está em `tests/api/documents/`; os dados usados por ele ficam em `tests/api/documents/fixtures/`.
 
 ## Dados de teste incluídos
 

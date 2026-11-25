@@ -301,7 +301,11 @@ async function start() {
   });
 }
 
-start().catch((error) => {
-  console.error('Não foi possível iniciar o servidor:', error);
-  process.exitCode = 1;
-});
+if (require.main === module) {
+ start().catch((error) => {
+   console.error('Não foi possível iniciar o servidor:', error);
+   process.exitCode = 1;
+ });
+}
+
+module.exports = { app };
