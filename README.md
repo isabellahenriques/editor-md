@@ -38,6 +38,16 @@ No PowerShell do Windows, use `npm.cmd run dev`.
 
 O servidor usa a porta `3000` por padrão. Para escolher outra porta, defina a variável de ambiente `PORT`.
 
+## Teste de performance
+
+O teste usa o [k6](https://grafana.com/docs/k6/latest/set-up/install-k6/) e mede as requisições para a listagem de documentos (`/api/documents`). Instale o k6 separadamente do npm e deixe a aplicação rodando em `http://localhost:3000` (por exemplo, com `npm start` em outro terminal). Em seguida, execute:
+
+```bash
+k6 run tests/performance/listar_documentos.tests.js
+```
+
+O cenário sobe até 10 usuários virtuais em 5 segundos, mantém essa carga por 20 segundos e encerra em 5 segundos. O teste verifica se a API responde com status 200 e considera a execução aprovada quando 90% das requisições duram menos de 3 segundos, nenhuma ultrapassa 5 segundos e a taxa de falhas fica abaixo de 1%.
+
 ## Dados de teste incluídos
 
 Na primeira execução de cada processo, a base em memória é preenchida com três documentos:
