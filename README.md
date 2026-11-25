@@ -6,13 +6,11 @@ Um editor colaborativo simples de documentos Markdown. O site e a API são públ
 
 ## Como instalar
 
-Requisitos: Node.js 20 ou superior e npm.
+Requisitos: Node.js 20 ou superior e npm. Os comandos abaixo são para o Prompt de Comando do Windows (cmd).
 
-```bash
+```cmd
 npm install
 ```
-
-No PowerShell do Windows, use `npm.cmd install` se a política de execução bloquear `npm.ps1`.
 
 Esse comando também instala as ferramentas de desenvolvimento para testes: Mocha, Supertest, Chai e Cypress.
 
@@ -20,23 +18,15 @@ Na primeira inicialização, `mongodb-memory-server` baixa o binário do MongoDB
 
 ## Como executar
 
-```bash
+```cmd
 npm start
-```
-
-No PowerShell do Windows, use:
-
-```powershell
-npm.cmd start
 ```
 
 Em desenvolvimento, com reinicialização automática:
 
-```bash
+```cmd
 npm run dev
 ```
-
-No PowerShell do Windows, use `npm.cmd run dev`.
 
 O servidor usa a porta `3000` por padrão. Para escolher outra porta, defina a variável de ambiente `PORT`.
 
@@ -44,7 +34,7 @@ O servidor usa a porta `3000` por padrão. Para escolher outra porta, defina a v
 
 O teste usa o [k6](https://grafana.com/docs/k6/latest/set-up/install-k6/) e mede as requisições para a listagem de documentos (`/api/documents`). Instale o k6 separadamente do npm e deixe a aplicação rodando em `http://localhost:3000` (por exemplo, com `npm start` em outro terminal). Em seguida, execute:
 
-```bash
+```cmd
 k6 run tests/performance/listar_documentos.tests.js
 ```
 
@@ -54,11 +44,33 @@ O cenário sobe até 10 usuários virtuais em 5 segundos, mantém essa carga por
 
 Os testes funcionais da API usam Mocha, Supertest e Chai, com dados isolados em um MongoDB em memória. Para executá-los:
 
-```bash
+```cmd
 npm test
 ```
 
-No PowerShell do Windows, use `npm.cmd test` se a política de execução bloquear `npm.ps1`. O teste de `GET /api/documents` está em `tests/api/documents/`; os dados usados por ele ficam em `tests/api/documents/fixtures/`.
+O teste de `GET /api/documents` está em `tests/api/documents/`; os dados usados por ele ficam em `tests/api/documents/fixtures/`.
+
+## Teste de interface com Cypress
+
+O teste de interface abre a aplicação e verifica o painel de documentos, o botão de criação e os documentos exibidos na lista. O Cypress está configurado para acessar `http://localhost:3000`.
+
+Inicie o servidor em um terminal:
+
+```cmd
+npm start
+```
+
+Em outro terminal, abra a interface do Cypress:
+
+```cmd
+npx cypress open
+```
+
+Selecione **E2E Testing**, escolha um navegador e abra `tests/e2e/documents.cy.js`. Para executar o teste sem abrir a interface:
+
+```cmd
+npm run test:e2e -- --spec "tests/e2e/documents.cy.js"
+```
 
 ## Dados de teste incluídos
 
